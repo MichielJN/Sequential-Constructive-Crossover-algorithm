@@ -1,5 +1,5 @@
-import os
 import random
+
 
 def SCX(parent1, parent2, costMatrix):
     child = []
@@ -31,8 +31,25 @@ def SCX(parent1, parent2, costMatrix):
         costParent2 = CalculateCost(costMatrix, items2)
 
         if child.__contains__(parent1[indexSuccesor1]) and child.__contains__(parent2[indexSuccesor2]):
-            currentItem = [item for item in parent1 if item not in child][0]
-            child.append(currentItem)
+            unusedItems = [item for item in parent1 if item not in child]
+            itemToUse = None
+            if len(child) == len(parent1)-1:
+                for item in unusedItems:
+                    itemRow = [child[len(child)-1], item, child[0]]
+                    points = CalculateCost(costMatrix, [itemRow[0], itemRow[1]]) + CalculateCost(costMatrix, [itemRow[1], itemRow[2]])
+                    if itemToUse == None:
+                        itemToUse = [item, points]
+                    elif points < itemToUse[1]:
+                        itemToUse = [item, points]
+            else:
+                for item in unusedItems:
+                    points = CalculateCost(costMatrix, [child[len(child)-1], item])
+                    if itemToUse == None:
+                        itemToUse = [item, points]
+                    elif points < itemToUse[1]:
+                        itemToUse = [item, points]
+            child.append(itemToUse[0])
+            currentItem = itemToUse[0]
         elif child.__contains__(parent1[indexSuccesor1]):
             child.append(items2[1])    
             currentItem = items2[1]
@@ -76,6 +93,8 @@ costMatrix = [
 parent1 = GetRandomList(itemSet)
 parent2 = GetRandomList(itemSet)
 
+print("\n" + str(parent1))
+print(parent2)
 for i in range (0, 119):
     parent1 = SCX(parent1, parent2, costMatrix)
     parent2 = SCX(parent2, parent1, costMatrix)
