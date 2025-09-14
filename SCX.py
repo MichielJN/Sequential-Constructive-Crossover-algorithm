@@ -2,6 +2,11 @@ import random
 
 
 def SCX(parent1, parent2, costMatrix):
+    """
+    Uses two lists with the same elements in a different order and an overwiew with the cost from every point to every other point.
+    Then it tries create one better list by looking up the same element in each list, then adding the succesor of that element
+    that has the lowest cost to the return list.
+    """
     child = []
     currentItem = None
     if len(child) == 0:
@@ -42,7 +47,7 @@ def SCX(parent1, parent2, costMatrix):
             child.append(items1[1])
             currentItem = items1[1]
         else:
-            if costParent1 <= costParent2: 
+            if costParent1 <= costParent2:
                 child.append(items1[1])
                 currentItem = items1[1]
             else:
@@ -52,6 +57,10 @@ def SCX(parent1, parent2, costMatrix):
     return child
 
 def Fallback(parent1, parent2, child, indexSuccesor1, indexSuccesor2, costMatrix):
+    """
+    If the succesor element in the SCX algorithm happens to be the same, this function
+    chooses the best elemnt for the next position that is not already in the child.
+    """
     unusedItems = [item for item in parent1 if item not in child]
     if len(unusedItems) == 1:
         return unusedItems[0]
@@ -74,10 +83,17 @@ def Fallback(parent1, parent2, child, indexSuccesor1, indexSuccesor2, costMatrix
     return itemToUse[0]
         
 def CalculateCost(costMatrix, items):
+    """
+    Calculates the cost from one element to the next element.
+    """
     cost = { (a, b): c for (a, b, c) in costMatrix }
     return cost[(items[0], items[1])]     
 
 def CalculateRouteCost(child, costMatrix):
+    """
+    Calculates the total route cost of a list.
+    It includes the cost of the last element to the first element.
+    """
     cost = 0
     costPairs = []
     for i in range(0, len(child)):
@@ -90,6 +106,9 @@ def CalculateRouteCost(child, costMatrix):
     return cost
 
 def SortListOnLowestCost(parents, costMatrix):
+    """
+    Sorts a collection of lists from the lowest cost list to the highest cost list.
+    """
     selectedParents = []
     for i in range(0, len(parents)):
         item = parents.pop()
@@ -100,6 +119,14 @@ def SortListOnLowestCost(parents, costMatrix):
     return selectedParents
 
 def GeneticAlgorithm(itemSet, costMatrix, startingPopulation, populationDivider):
+    """
+    Tries to get the best possible route or get as close to it as possible by selecting a certain number
+    of lowest cost lists. 
+    itemset is the set of items that are going to be used.
+    costMatrix is the cost from every item to every other item.
+    startingPopulation is how many different configurations the program has to make from the itemset.
+    poulationDivider is how many of each new population has to be used. It divides the population amount with that number(only the higher cost lists will be discarded).
+    """
     parents = set()
     bestParent = None
     while len(parents) < startingPopulation  +1 / populationDivider:
